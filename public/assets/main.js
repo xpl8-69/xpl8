@@ -7,11 +7,7 @@ const MAX_SCORE = 1450;
 
 document.addEventListener('mousemove', e => {
   const g = document.getElementById('glow');
-  if (g) {
-    g.style.left = e.clientX + 'px';
-    g.style.top = e.clientY + 'px';
-    g.style.filter = 'brightness(1.2) contrast(1.3)';
-  }
+  if (g) { g.style.left = e.clientX + 'px'; g.style.top = e.clientY + 'px'; }
 });
 
 async function _init(prevLives) {
@@ -193,79 +189,289 @@ function _livesHTML() {
 }
 
 const META = {
-  1:{ title:'three parts, one word',desc:'the data went through multiple transformations.\nread backwards from the output.',diff:'easy',pts:50},
-  2:{ title:'noisy bits',desc:'the binary looks clean.\nit is not.',diff:'easy',pts:75},
-  3:{ title:'dead script',desc:'the code runs. the output means nothing yet.\ntwo layers. peel them.',diff:'medium',pts:100},
-  4:{ title:'maintenance page',desc:'the page says nothing.\nthe source does not agree.',diff:'medium',pts:125},
-  5:{ title:'access denied',desc:'you have a token.\nyou are not who you need to be.',diff:'medium',pts:150},
-  6:{ title:'second factor',desc:'the endpoint expects a code.\nit also accepts something else.',diff:'hard',pts:150},
-  7:{ title:'login',desc:'standard login form.\nnon-standard implementation.',diff:'hard',pts:175},
-  8:{ title:'your files',desc:'you can read your own resources.\nmaybe others too.',diff:'hard',pts:175},
-  9:{ title:'access level',desc:'your role is stored somewhere you can reach.\nit is encoded, not encrypted.',diff:'hard',pts:200},
-  10:{ title:'the gate',desc:'a hidden endpoint. a specific proof.\nfind the script. read it. compute the answer.',diff:'expert',pts:250},
+  1:  { title: 'three parts, one word',    desc: 'the data went through multiple transformations.\nread backwards from the output.',         diff: 'easy',   pts: 50  },
+  2:  { title: 'noisy bits',               desc: 'the binary looks clean.\nit is not.',                                                       diff: 'easy',   pts: 75  },
+  3:  { title: 'dead script',              desc: 'the code runs. the output means nothing yet.\ntwo layers. peel them.',                      diff: 'medium', pts: 100 },
+  4:  { title: 'maintenance page',         desc: 'the page says nothing.\nthe source does not agree.',                                        diff: 'medium', pts: 125 },
+  5:  { title: 'access denied',            desc: 'you have a token.\nyou are not who you need to be.',                                        diff: 'medium', pts: 150 },
+  6:  { title: 'second factor',            desc: 'the endpoint expects a code.\nit also accepts something else.',                             diff: 'hard',   pts: 150 },
+  7:  { title: 'login',                    desc: 'standard login form.\nnon-standard implementation.',                                         diff: 'hard',   pts: 175 },
+  8:  { title: 'your files',               desc: 'you can read your own resources.\nmaybe others too.',                                        diff: 'hard',   pts: 175 },
+  9:  { title: 'access level',             desc: 'your role is stored somewhere you can reach.\nit is encoded, not encrypted.',               diff: 'hard',   pts: 200 },
+  10: { title: 'the gate',                 desc: 'a hidden endpoint. a specific proof.\nfind the script. read it. compute the answer.',       diff: 'expert', pts: 250 },
 };
 
 const HINTS = {
-  1:[{cost:10,text:'...'},{cost:15,text:'...'}],
-  2:[{cost:15,text:'...'},{cost:20,text:'...'}],
-  3:[{cost:20,text:'...'},{cost:25,text:'...'}],
-  4:[{cost:20,text:'...'},{cost:25,text:'...'}],
-  5:[{cost:25,text:'...'},{cost:30,text:'...'}],
-  6:[{cost:25,text:'...'},{cost:30,text:'...'}],
-  7:[{cost:30,text:'...'},{cost:35,text:'...'}],
-  8:[{cost:30,text:'...'},{cost:35,text:'...'}],
-  9:[{cost:35,text:'...'},{cost:40,text:'...'}],
+  1: [{cost:10,text:'...'},{cost:15,text:'...'}],
+  2: [{cost:15,text:'...'},{cost:20,text:'...'}],
+  3: [{cost:20,text:'...'},{cost:25,text:'...'}],
+  4: [{cost:20,text:'...'},{cost:25,text:'...'}],
+  5: [{cost:25,text:'...'},{cost:30,text:'...'}],
+  6: [{cost:25,text:'...'},{cost:30,text:'...'}],
+  7: [{cost:30,text:'...'},{cost:35,text:'...'}],
+  8: [{cost:30,text:'...'},{cost:35,text:'...'}],
+  9: [{cost:35,text:'...'},{cost:40,text:'...'}],
   10:[{cost:50,text:'...'},{cost:60,text:'...'}],
 };
 
-function _zoneBody(n){return ''}
+function _zoneBody(n) {
+  if (n === 1) return `
+    ${_clue('c1', `<span class="hl">part_a</span> = <span class="hl2">"5453"</span>
+<span class="hl">part_b</span> = <span class="hl2">"4F48"</span>
+<span class="hl">part_c</span> = <span class="hl2">"47"</span>
 
-function _diffClass(d){return{easy:'d-easy',medium:'d-med',hard:'d-hard',expert:'d-xtra'}[d]||'d-easy'}
+<span class="dim">// each part is hex. but the word was reversed before splitting.</span>
+<span class="dim">// combine → undo reversal → decode → UPPERCASE</span>`)}
+    <div class="irow"><label class="ilbl">answer</label><input class="inp" id="ans" type="text" maxlength="12" placeholder="_ _ _ _ _" autocomplete="off" spellcheck="false"/></div>
+    ${_hintsHTML(1, HINTS[1])}
+    <div class="btn-row"><button class="btn btn-g" id="sub-btn" onclick="_submit(1)">submit</button></div>`;
 
-function _render(){if(_st>10)return;const m=META[_st];document.getElementById('root').innerHTML=`
-<div id="glow"></div>
+  if (n === 2) return `
+    ${_clue('c2', `<span class="dim">ROW 1:</span>  <span class="hl">01001001</span>
+<span class="dim">ROW 2:</span>  <span class="hl">01000011</span>
+<span class="dim">ROW 3:</span>  <span class="hl">01000011</span>
+<span class="dim">ROW 4:</span>  <span class="hl">01000010</span>
+<span class="dim">ROW 5:</span>  <span class="hl">01001111</span>
+<span class="dim">ROW 6:</span>  <span class="hl">01011000</span>
+
+<span class="dim">key</span> = <span class="hl2">0x0A</span>
+<span class="dim">// each row XOR key → decode → UPPERCASE</span>`)}
+    <div class="irow"><label class="ilbl">answer</label><input class="inp" id="ans" type="text" maxlength="12" placeholder="_ _ _ _ _ _" autocomplete="off" spellcheck="false"/></div>
+    ${_hintsHTML(2, HINTS[2])}
+    <div class="btn-row"><button class="btn btn-g" id="sub-btn" onclick="_submit(2)">submit</button></div>`;
+
+  if (n === 3) return `
+    ${_clue('c3', `<span class="dim">// a script was found on the server.</span>
+<span class="dim">// paste it in the console. read the output.</span>
+<span class="dim">// the output is not the answer.</span>
+
+GET <span class="hl">/api/c3clue</span>
+
+<span class="dim">// two operations were applied to the original word.</span>
+<span class="dim">// the script only undoes one of them.</span>`)}
+    <div class="irow"><label class="ilbl">answer</label><input class="inp" id="ans" type="text" maxlength="12" placeholder="_ _ _ _ _ _" autocomplete="off" spellcheck="false"/></div>
+    ${_hintsHTML(3, HINTS[3])}
+    <div class="btn-row"><button class="btn btn-g" id="sub-btn" onclick="_submit(3)">submit</button></div>`;
+
+  if (n === 4) return `
+    ${_clue('c4', `<span class="dim">// a page was found. it says nothing.</span>
+
+GET <span class="hl">/api/c4page</span>
+
+<span class="dim">// open it in the browser.</span>
+<span class="dim">// look at what browsers don't render.</span>
+<span class="dim">// translate what you find.</span>`)}
+    <div class="irow"><label class="ilbl">answer</label><input class="inp" id="ans" type="text" maxlength="12" placeholder="_ _ _ _ _" autocomplete="off" spellcheck="false"/></div>
+    ${_hintsHTML(4, HINTS[4])}
+    <div class="btn-row"><button class="btn btn-g" id="sub-btn" onclick="_submit(4)">submit</button></div>`;
+
+  if (n === 5) return `
+    ${_clue('c5', `<span class="dim">// a token will be issued to you as a cookie.</span>
+<span class="dim">// the server reads it on every request.</span>
+<span class="dim">// your current role is not enough.</span>
+
+POST <span class="hl">/api/c5/token</span>   <span class="dim">→ get token</span>
+POST <span class="hl">/api/c5/verify</span>  <span class="dim">→ verify role</span>`)}
+    <div class="btn-row" style="margin-bottom:12px">
+      <button class="btn btn-o" id="c5-get" onclick="_c5getToken()">get token</button>
+      <button class="btn btn-b" onclick="_c5claim()">verify</button>
+    </div>
+    ${_hintsHTML(5, HINTS[5])}
+    <div id="msg"></div>`;
+
+  if (n === 6) return `
+    ${_clue('c6', `POST <span class="hl">/api/c6/verify</span>
+Content-Type: application/json
+
+<span class="dim">{ "code": "..." }</span>
+
+<span class="dim">// the endpoint expects a 6-digit code.</span>
+<span class="dim">// it also responds to something else.</span>`)}
+    <div class="irow"><label class="ilbl">code</label><input class="inp" id="z6code" type="text" maxlength="10" placeholder="_ _ _ _ _ _" autocomplete="off" spellcheck="false"/></div>
+    ${_hintsHTML(6, HINTS[6])}
+    <div class="btn-row"><button class="btn btn-g" id="sub-btn" onclick="_c6submit()">verify</button></div>`;
+
+  if (n === 7) return `
+    ${_clue('c7', `POST <span class="hl">/api/c7/login</span>
+Content-Type: application/json
+
+<span class="dim">{</span>
+  <span class="hl2">"username"</span><span class="dim">:</span> <span class="hl">"..."</span><span class="dim">,</span>
+  <span class="hl2">"password"</span><span class="dim">:</span> <span class="hl">"..."</span>
+<span class="dim">}</span>
+
+<span class="dim">// no hints in the UI.</span>
+<span class="dim">// the endpoint does the talking.</span>`)}
+    <div class="irow"><label class="ilbl">username</label><input class="inp" id="z7u" type="text" maxlength="80" placeholder="username" autocomplete="off" spellcheck="false"/></div>
+    <div class="irow"><label class="ilbl">password</label><input class="inp" id="z7p" type="text" maxlength="80" placeholder="password" autocomplete="off" spellcheck="false"/></div>
+    ${_hintsHTML(7, HINTS[7])}
+    <div class="btn-row"><button class="btn btn-r" id="sub-btn" onclick="_c7submit()">login</button></div>`;
+
+  if (n === 8) return `
+    ${_clue('c8', `GET <span class="hl">/api/c8/resource/:id</span>
+
+<span class="dim">// you have access to your own resources.</span>
+<span class="dim">// resource IDs are integers.</span>
+<span class="dim">// try a few.</span>`)}
+    <div class="btn-row" style="margin-bottom:12px">
+      ${[1,2,3].map(i=>`<button class="btn btn-o" onclick="_c8try(${i})">/resource/${i}</button>`).join('')}
+    </div>
+    <div class="clue" id="c8out" style="min-height:40px;color:var(--mu);font-size:11px"></div>
+    ${_hintsHTML(8, HINTS[8])}
+    <div id="msg"></div>`;
+
+  if (n === 9) return `
+    ${_clue('c9', `GET <span class="hl">/api/c9/profile</span>
+
+<span class="dim">// the server sets a cookie on first visit.</span>
+<span class="dim">// it reads the cookie on every request.</span>
+<span class="dim">// your access level is determined by that cookie.</span>
+<span class="dim">// the value is encoded.</span>`)}
+    <div class="btn-row" style="margin-bottom:12px">
+      <button class="btn btn-o" onclick="_c9visit()">visit profile</button>
+    </div>
+    <div class="clue" id="c9out" style="min-height:40px;color:var(--mu);font-size:11px"></div>
+    ${_hintsHTML(9, HINTS[9])}
+    <div id="msg"></div>`;
+
+  if (n === 10) return `
+    ${_clue('c10', `<span class="dim">// the final gate is hidden.</span>
+<span class="dim">// a script was left behind that knows where it is.</span>
+<span class="dim">// the gate expects a proof of identity.</span>
+
+GET <span class="hl">/api/c10clue</span>
+
+<span class="dim">// read it. understand it. compute the proof.</span>
+<span class="dim">// then POST it to the gate.</span>`)}
+    <div class="irow"><label class="ilbl">proof (hex)</label><input class="inp" id="c10proof" type="text" maxlength="70" placeholder="sha256 hash..." autocomplete="off" spellcheck="false"/></div>
+    ${_hintsHTML(10, HINTS[10])}
+    <div class="btn-row"><button class="btn btn-p" id="sub-btn" onclick="_c10submit()">submit proof</button></div>`;
+
+  return '';
+}
+
+function _diffClass(d) {
+  return { easy:'d-easy', medium:'d-med', hard:'d-hard', expert:'d-xtra' }[d] || 'd-easy';
+}
+
+function _render() {
+  if (_st > 10) return;
+  const m = META[_st];
+  document.getElementById('root').innerHTML = `
+<div id="glow" style="opacity:1;filter:blur(60px);width:340px;height:340px;background:radial-gradient(circle,rgba(139,92,246,0.55) 0%,rgba(99,102,241,0.35) 45%,transparent 70%);position:fixed;pointer-events:none;transform:translate(-50%,-50%);z-index:0"></div>
 <div class="app">
-<header class="hdr">
-<div class="hdr-tag">capture the flag</div>
-<div class="hdr-title">Hard,<span> no?</span></div>
-<div class="hdr-meta">
-<span>challenge <b>${_st}</b>/10</span>
-<span>built by <b>0x69erツ</b></span>
-</div>
-</header>
-${_livesHTML()}
-${_scoreBar()}
-<div class="card">
-<div class="card-head">
-<div>
-<div class="card-id">CHALLENGE ${String(_st).padStart(2,'0')}</div>
-<div class="card-title">${m.title}</div>
-</div>
-<div>
-<span class="diff-badge ${_diffClass(m.diff)}">${m.diff}</span>
-<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--mu);text-align:right;margin-top:4px">${m.pts} pts</div>
-</div>
-</div>
-<div class="card-desc">${m.desc}</div>
-${_zoneBody(_st)}
-<div id="msg"></div>
-</div>
-</div>`;}
+  <header class="hdr">
+    <div class="hdr-tag">capture the flag</div>
+    <div class="hdr-title">Hard,<span> no?</span></div>
+    <div class="hdr-meta">
+      <span>challenge <b>${_st}</b>/10</span>
+      <span>built by <b>0x69erツ</b></span>
+    </div>
+  </header>
+  ${_livesHTML()}
+  ${_scoreBar()}
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <div class="card-id">CHALLENGE ${String(_st).padStart(2,'0')}</div>
+        <div class="card-title">${m.title}</div>
+      </div>
+      <div>
+        <span class="diff-badge ${_diffClass(m.diff)}">${m.diff}</span>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--mu);text-align:right;margin-top:4px">${m.pts} pts</div>
+      </div>
+    </div>
+    <div class="card-desc">${m.desc}</div>
+    ${_zoneBody(_st)}
+    <div id="msg"></div>
+  </div>
+</div>`;
 
-function _gameOver(){}
-function _win(){}
+  document.addEventListener('mousemove', e => {
+    const g = document.getElementById('glow');
+    if (g) { g.style.left = e.clientX+'px'; g.style.top = e.clientY+'px'; }
+  });
 
-window._submit=_submit;
-window._c5getToken=_c5getToken;
-window._c5claim=_c5claim;
-window._c6submit=_c6submit;
-window._c7submit=_c7submit;
-window._c8try=_c8try;
-window._c9visit=_c9visit;
-window._c10submit=_c10submit;
-window._copy=_copy;
-window._getHint=_getHint;
-window._init=_init;
+  document.addEventListener('keydown', function _kh(e) {
+    if (e.key === 'Enter') {
+      if (_st <= 4) _submit(_st);
+      else if (_st === 6) _c6submit();
+      else if (_st === 7) _c7submit();
+      else if (_st === 10) _c10submit();
+      document.removeEventListener('keydown', _kh);
+    }
+  });
+}
+
+function _gameOver() {
+  _runCount++;
+  const msgs = [
+    { title: "u have a skill issue btw,", sub: "don't play CTFs again bro.", btn: "ok, one more try", next: () => { _msg('', ''); setTimeout(() => _init(_maxLives), 200); } },
+    { title: "ok, I will give one more try,", sub: "don't disappoint me.", btn: "i'll do better", next: () => { setTimeout(() => _init(_maxLives), 200); } },
+    { title: "there is no way u have played CTF\never in your life,", sub: "anyways there is no point of not letting u try again.", btn: "yeah ok", next: () => { setTimeout(() => _init(_maxLives), 200); } },
+    { title: "broo, u know what I am tired of this.", sub: "go back again to the starting point.", btn: "...fine", next: () => { _runCount = 0; setTimeout(() => _init(3), 200); } },
+  ];
+  const idx = Math.min(_runCount - 1, msgs.length - 1);
+  const m = msgs[idx];
+  document.getElementById('root').innerHTML = `
+<div id="glow" style="opacity:1;filter:blur(60px);width:340px;height:340px;background:radial-gradient(circle,rgba(139,92,246,0.55) 0%,rgba(99,102,241,0.35) 45%,transparent 70%);position:fixed;pointer-events:none;transform:translate(-50%,-50%);z-index:0"></div>
+<div class="app">
+  <div class="gameover">
+    <div class="go-title">${m.title}</div>
+    <div class="go-sub">${m.sub}</div>
+    <button class="btn btn-r" onclick="window._goNext()">${m.btn}</button>
+  </div>
+</div>`;
+  window._goNext = m.next;
+  document.addEventListener('mousemove', e => {
+    const g = document.getElementById('glow');
+    if (g) { g.style.left = e.clientX+'px'; g.style.top = e.clientY+'px'; }
+  });
+}
+
+function _win(flag, score, maxScore) {
+  const pct = Math.round((score / maxScore) * 100);
+  let taunt = '';
+  if (pct === 100) taunt = `<b>perfect score.</b> no hints used. genuinely impressive.`;
+  else if (pct >= 75) taunt = `${pct}% score. solid. you clearly know what you're doing.`;
+  else if (pct >= 50) taunt = `${pct}% score. not bad. the hints carried you a little tho.`;
+  else taunt = `${pct}% score. bro used every hint and still barely made it 😭`;
+
+  document.getElementById('root').innerHTML = `
+<div id="glow" style="opacity:1;filter:blur(60px);width:340px;height:340px;background:radial-gradient(circle,rgba(139,92,246,0.55) 0%,rgba(99,102,241,0.35) 45%,transparent 70%);position:fixed;pointer-events:none;transform:translate(-50%,-50%);z-index:0"></div>
+<div class="app">
+  <div class="win">
+    <div class="win-title">GG.</div>
+    <div class="win-sub">all 10 challenges cleared</div>
+    <div class="flag-box">
+      <div class="flag-lbl">your flag</div>
+      <div class="flag-val" id="fv">${flag}</div>
+      <button class="btn btn-g" id="fcp" onclick="_copy(document.getElementById('fv').innerText,'fcp')">copy flag</button>
+    </div>
+    <div class="win-score">${score} / ${maxScore}</div>
+    <div class="win-score-lbl">final score</div>
+    <div class="win-taunt">${taunt}</div>
+    <div style="margin-top:28px"><button class="btn btn-o" onclick="window._init(3)">play again</button></div>
+    <div class="win-credit">built by 0x69erツ</div>
+  </div>
+</div>`;
+  document.addEventListener('mousemove', e => {
+    const g = document.getElementById('glow');
+    if (g) { g.style.left = e.clientX+'px'; g.style.top = e.clientY+'px'; }
+  });
+}
+
+window._submit   = _submit;
+window._c5getToken = _c5getToken;
+window._c5claim  = _c5claim;
+window._c6submit = _c6submit;
+window._c7submit = _c7submit;
+window._c8try    = _c8try;
+window._c9visit  = _c9visit;
+window._c10submit = _c10submit;
+window._copy     = _copy;
+window._getHint  = _getHint;
+window._init     = _init;
 
 _init();
 })();
