@@ -189,16 +189,16 @@ function _livesHTML() {
 }
 
 const META = {
-  1:  { title: 'three parts, one word',    desc: 'the data went through multiple transformations.\nread backwards from the output.',         diff: 'easy',   pts: 50  },
-  2:  { title: 'noisy bits',               desc: 'the binary looks clean.\nit is not.',                                                       diff: 'easy',   pts: 75  },
-  3:  { title: 'dead script',              desc: 'the code runs. the output means nothing yet.\ntwo layers. peel them.',                      diff: 'medium', pts: 100 },
-  4:  { title: 'maintenance page',         desc: 'the page says nothing.\nthe source does not agree.',                                        diff: 'medium', pts: 125 },
-  5:  { title: 'access denied',            desc: 'you have a token.\nyou are not who you need to be.',                                        diff: 'medium', pts: 150 },
-  6:  { title: 'second factor',            desc: 'the endpoint expects a code.\nit also accepts something else.',                             diff: 'hard',   pts: 150 },
-  7:  { title: 'login',                    desc: 'standard login form.\nnon-standard implementation.',                                         diff: 'hard',   pts: 175 },
-  8:  { title: 'your files',               desc: 'you can read your own resources.\nmaybe others too.',                                        diff: 'hard',   pts: 175 },
-  9:  { title: 'access level',             desc: 'your role is stored somewhere you can reach.\nit is encoded, not encrypted.',               diff: 'hard',   pts: 200 },
-  10: { title: 'the gate',                 desc: 'a hidden endpoint. a specific proof.\nfind the script. read it. compute the answer.',       diff: 'expert', pts: 250 },
+  1:  { title: 'three parts, one word',    desc: '',                                                                                         diff: 'easy',   pts: 50  },
+  2:  { title: 'noisy bits',               desc: '',                                                       diff: 'easy',   pts: 75  },
+  3:  { title: 'dead script',              desc: '',                      diff: 'medium', pts: 100 },
+  4:  { title: 'maintenance page',         desc: '',                                        diff: 'medium', pts: 125 },
+  5:  { title: 'access denied',            desc: '',                                        diff: 'medium', pts: 150 },
+  6:  { title: 'second factor',            desc: '',                             diff: 'hard',   pts: 150 },
+  7:  { title: 'login',                    desc: '',                                         diff: 'hard',   pts: 175 },
+  8:  { title: 'your files',               desc: '',                                        diff: 'hard',   pts: 175 },
+  9:  { title: 'access level',             desc: '',               diff: 'hard',   pts: 200 },
+  10: { title: 'the gate',                 desc: '',       diff: 'expert', pts: 250 },
 };
 
 const HINTS = {
@@ -219,9 +219,7 @@ function _zoneBody(n) {
     ${_clue('c1', `<span class="hl">part_a</span> = <span class="hl2">"5453"</span>
 <span class="hl">part_b</span> = <span class="hl2">"4F48"</span>
 <span class="hl">part_c</span> = <span class="hl2">"47"</span>
-
-<span class="dim">// each part is hex. but the word was reversed before splitting.</span>
-<span class="dim">// combine → undo reversal → decode → UPPERCASE</span>`)}
+`)}
     <div class="irow"><label class="ilbl">answer</label><input class="inp" id="ans" type="text" maxlength="12" placeholder="_ _ _ _ _" autocomplete="off" spellcheck="false"/></div>
     ${_hintsHTML(1, HINTS[1])}
     <div class="btn-row"><button class="btn btn-g" id="sub-btn" onclick="_submit(1)">submit</button></div>`;
@@ -234,41 +232,31 @@ function _zoneBody(n) {
 <span class="dim">ROW 5:</span>  <span class="hl">01001111</span>
 <span class="dim">ROW 6:</span>  <span class="hl">01011000</span>
 
-<span class="dim">key</span> = <span class="hl2">0x0A</span>
-<span class="dim">// each row XOR key → decode → UPPERCASE</span>`)}
+<span class="dim">key</span> = <span class="hl2">0x0A</span>`)}
     <div class="irow"><label class="ilbl">answer</label><input class="inp" id="ans" type="text" maxlength="12" placeholder="_ _ _ _ _ _" autocomplete="off" spellcheck="false"/></div>
     ${_hintsHTML(2, HINTS[2])}
     <div class="btn-row"><button class="btn btn-g" id="sub-btn" onclick="_submit(2)">submit</button></div>`;
 
   if (n === 3) return `
-    ${_clue('c3', `<span class="dim">// a script was found on the server.</span>
-<span class="dim">// paste it in the console. read the output.</span>
-<span class="dim">// the output is not the answer.</span>
+    ${_clue('c3', `
 
 GET <span class="hl">/api/c3clue</span>
-
-<span class="dim">// two operations were applied to the original word.</span>
-<span class="dim">// the script only undoes one of them.</span>`)}
+`)}
     <div class="irow"><label class="ilbl">answer</label><input class="inp" id="ans" type="text" maxlength="12" placeholder="_ _ _ _ _ _" autocomplete="off" spellcheck="false"/></div>
     ${_hintsHTML(3, HINTS[3])}
     <div class="btn-row"><button class="btn btn-g" id="sub-btn" onclick="_submit(3)">submit</button></div>`;
 
   if (n === 4) return `
-    ${_clue('c4', `<span class="dim">// a page was found. it says nothing.</span>
+    ${_clue('c4', `
 
 GET <span class="hl">/api/c4page</span>
-
-<span class="dim">// open it in the browser.</span>
-<span class="dim">// look at what browsers don't render.</span>
-<span class="dim">// translate what you find.</span>`)}
+`)}
     <div class="irow"><label class="ilbl">answer</label><input class="inp" id="ans" type="text" maxlength="12" placeholder="_ _ _ _ _" autocomplete="off" spellcheck="false"/></div>
     ${_hintsHTML(4, HINTS[4])}
     <div class="btn-row"><button class="btn btn-g" id="sub-btn" onclick="_submit(4)">submit</button></div>`;
 
   if (n === 5) return `
-    ${_clue('c5', `<span class="dim">// a token will be issued to you as a cookie.</span>
-<span class="dim">// the server reads it on every request.</span>
-<span class="dim">// your current role is not enough.</span>
+    ${_clue('c5', `
 
 POST <span class="hl">/api/c5/token</span>   <span class="dim">→ get token</span>
 POST <span class="hl">/api/c5/verify</span>  <span class="dim">→ verify role</span>`)}
@@ -284,9 +272,7 @@ POST <span class="hl">/api/c5/verify</span>  <span class="dim">→ verify role</
 Content-Type: application/json
 
 <span class="dim">{ "code": "..." }</span>
-
-<span class="dim">// the endpoint expects a 6-digit code.</span>
-<span class="dim">// it also responds to something else.</span>`)}
+`)}
     <div class="irow"><label class="ilbl">code</label><input class="inp" id="z6code" type="text" maxlength="10" placeholder="_ _ _ _ _ _" autocomplete="off" spellcheck="false"/></div>
     ${_hintsHTML(6, HINTS[6])}
     <div class="btn-row"><button class="btn btn-g" id="sub-btn" onclick="_c6submit()">verify</button></div>`;
@@ -299,9 +285,7 @@ Content-Type: application/json
   <span class="hl2">"username"</span><span class="dim">:</span> <span class="hl">"..."</span><span class="dim">,</span>
   <span class="hl2">"password"</span><span class="dim">:</span> <span class="hl">"..."</span>
 <span class="dim">}</span>
-
-<span class="dim">// no hints in the UI.</span>
-<span class="dim">// the endpoint does the talking.</span>`)}
+`)}
     <div class="irow"><label class="ilbl">username</label><input class="inp" id="z7u" type="text" maxlength="80" placeholder="username" autocomplete="off" spellcheck="false"/></div>
     <div class="irow"><label class="ilbl">password</label><input class="inp" id="z7p" type="text" maxlength="80" placeholder="password" autocomplete="off" spellcheck="false"/></div>
     ${_hintsHTML(7, HINTS[7])}
@@ -309,10 +293,7 @@ Content-Type: application/json
 
   if (n === 8) return `
     ${_clue('c8', `GET <span class="hl">/api/c8/resource/:id</span>
-
-<span class="dim">// you have access to your own resources.</span>
-<span class="dim">// resource IDs are integers.</span>
-<span class="dim">// try a few.</span>`)}
+`)}
     <div class="btn-row" style="margin-bottom:12px">
       ${[1,2,3].map(i=>`<button class="btn btn-o" onclick="_c8try(${i})">/resource/${i}</button>`).join('')}
     </div>
@@ -322,11 +303,7 @@ Content-Type: application/json
 
   if (n === 9) return `
     ${_clue('c9', `GET <span class="hl">/api/c9/profile</span>
-
-<span class="dim">// the server sets a cookie on first visit.</span>
-<span class="dim">// it reads the cookie on every request.</span>
-<span class="dim">// your access level is determined by that cookie.</span>
-<span class="dim">// the value is encoded.</span>`)}
+`)}
     <div class="btn-row" style="margin-bottom:12px">
       <button class="btn btn-o" onclick="_c9visit()">visit profile</button>
     </div>
@@ -335,14 +312,10 @@ Content-Type: application/json
     <div id="msg"></div>`;
 
   if (n === 10) return `
-    ${_clue('c10', `<span class="dim">// the final gate is hidden.</span>
-<span class="dim">// a script was left behind that knows where it is.</span>
-<span class="dim">// the gate expects a proof of identity.</span>
+    ${_clue('c10', `
 
 GET <span class="hl">/api/c10clue</span>
-
-<span class="dim">// read it. understand it. compute the proof.</span>
-<span class="dim">// then POST it to the gate.</span>`)}
+`)}
     <div class="irow"><label class="ilbl">proof (hex)</label><input class="inp" id="c10proof" type="text" maxlength="70" placeholder="sha256 hash..." autocomplete="off" spellcheck="false"/></div>
     ${_hintsHTML(10, HINTS[10])}
     <div class="btn-row"><button class="btn btn-p" id="sub-btn" onclick="_c10submit()">submit proof</button></div>`;
