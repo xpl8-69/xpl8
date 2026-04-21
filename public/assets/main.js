@@ -189,7 +189,7 @@ function _livesHTML() {
 }
 
 const META = {
-  1:  { title: 'three parts, one word',    desc: '',                                                                                         diff: 'easy',   pts: 50  },
+  1:  { title: 'three parts, one word',    desc: '',         diff: 'easy',   pts: 50  },
   2:  { title: 'noisy bits',               desc: '',                                                       diff: 'easy',   pts: 75  },
   3:  { title: 'dead script',              desc: '',                      diff: 'medium', pts: 100 },
   4:  { title: 'maintenance page',         desc: '',                                        diff: 'medium', pts: 125 },
@@ -258,8 +258,8 @@ GET <span class="hl">/api/c4page</span>
   if (n === 5) return `
     ${_clue('c5', `
 
-POST <span class="hl">/api/c5/token</span>   <span class="dim">→ get token</span>
-POST <span class="hl">/api/c5/verify</span>  <span class="dim">→ verify role</span>`)}
+POST <span class="hl">/api/c5/token</span>
+POST <span class="hl">/api/c5/verify</span>`)}
     <div class="btn-row" style="margin-bottom:12px">
       <button class="btn btn-o" id="c5-get" onclick="_c5getToken()">get token</button>
       <button class="btn btn-b" onclick="_c5claim()">verify</button>
@@ -271,7 +271,6 @@ POST <span class="hl">/api/c5/verify</span>  <span class="dim">→ verify role</
     ${_clue('c6', `POST <span class="hl">/api/c6/verify</span>
 Content-Type: application/json
 
-<span class="dim">{ "code": "..." }</span>
 `)}
     <div class="irow"><label class="ilbl">code</label><input class="inp" id="z6code" type="text" maxlength="10" placeholder="_ _ _ _ _ _" autocomplete="off" spellcheck="false"/></div>
     ${_hintsHTML(6, HINTS[6])}
@@ -331,7 +330,7 @@ function _render() {
   if (_st > 10) return;
   const m = META[_st];
   document.getElementById('root').innerHTML = `
-<div id="glow" style="opacity:1;filter:blur(60px);width:340px;height:340px;background:radial-gradient(circle,rgba(139,92,246,0.55) 0%,rgba(99,102,241,0.35) 45%,transparent 70%);position:fixed;pointer-events:none;transform:translate(-50%,-50%);z-index:0"></div>
+<div id="glow"></div>
 <div class="app">
   <header class="hdr">
     <div class="hdr-tag">capture the flag</div>
@@ -387,7 +386,7 @@ function _gameOver() {
   const idx = Math.min(_runCount - 1, msgs.length - 1);
   const m = msgs[idx];
   document.getElementById('root').innerHTML = `
-<div id="glow" style="opacity:1;filter:blur(60px);width:340px;height:340px;background:radial-gradient(circle,rgba(139,92,246,0.55) 0%,rgba(99,102,241,0.35) 45%,transparent 70%);position:fixed;pointer-events:none;transform:translate(-50%,-50%);z-index:0"></div>
+<div id="glow"></div>
 <div class="app">
   <div class="gameover">
     <div class="go-title">${m.title}</div>
@@ -411,7 +410,7 @@ function _win(flag, score, maxScore) {
   else taunt = `${pct}% score. bro used every hint and still barely made it 😭`;
 
   document.getElementById('root').innerHTML = `
-<div id="glow" style="opacity:1;filter:blur(60px);width:340px;height:340px;background:radial-gradient(circle,rgba(139,92,246,0.55) 0%,rgba(99,102,241,0.35) 45%,transparent 70%);position:fixed;pointer-events:none;transform:translate(-50%,-50%);z-index:0"></div>
+<div id="glow"></div>
 <div class="app">
   <div class="win">
     <div class="win-title">GG.</div>
