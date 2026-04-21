@@ -161,3 +161,111 @@ async function _getHint(stage, idx, cost) {
     el.innerHTML = `<span style="color:var(--mu)">— ${d.text}</span>`;
   }
 }
+
+function _hintsHTML(stage, hints) {
+  return `<button class="hint-toggle" onclick="document.getElementById('hp-${stage}').classList.toggle('open')">hints</button>
+  <div class="hint-panel" id="hp-${stage}">
+    ${hints.map((h,i) => `<div class="hint-item" id="hint-${stage}-${i}" onclick="_getHint(${stage},${i},${h.cost})">
+      <span>unlock</span><span class="hint-cost">-${h.cost} pts</span>
+    </div>`).join('')}
+  </div>`;
+}
+
+function _clue(id, content) {
+  return `<div class="clue">
+    <span class="clue-lbl">clue</span>
+    <button class="copy-btn" id="${id}cp" onclick="_copy(document.getElementById('${id}').innerText,'${id}cp')">copy</button>
+    <div id="${id}">${content}</div>
+  </div>`;
+}
+
+function _scoreBar() {
+  return `<div class="score-row">
+    <div><div class="score-label">score</div><div class="score-val" id="score-val">${_score} pts</div></div>
+    <div style="flex:1;margin-left:20px"><div class="score-track"><div class="score-fill" id="score-fill" style="width:${(_score/MAX_SCORE)*100}%"></div></div></div>
+  </div>`;
+}
+
+function _livesHTML() {
+  return `<div class="lives-row" id="lives-row">
+    ${Array.from({length:_maxLives},(_,i)=>`<span class="life${i>=_lives?' dead':''}">♥</span>`).join('')}
+  </div>`;
+}
+
+const META = {
+  1:{ title:'three parts, one word',desc:'the data went through multiple transformations.\nread backwards from the output.',diff:'easy',pts:50},
+  2:{ title:'noisy bits',desc:'the binary looks clean.\nit is not.',diff:'easy',pts:75},
+  3:{ title:'dead script',desc:'the code runs. the output means nothing yet.\ntwo layers. peel them.',diff:'medium',pts:100},
+  4:{ title:'maintenance page',desc:'the page says nothing.\nthe source does not agree.',diff:'medium',pts:125},
+  5:{ title:'access denied',desc:'you have a token.\nyou are not who you need to be.',diff:'medium',pts:150},
+  6:{ title:'second factor',desc:'the endpoint expects a code.\nit also accepts something else.',diff:'hard',pts:150},
+  7:{ title:'login',desc:'standard login form.\nnon-standard implementation.',diff:'hard',pts:175},
+  8:{ title:'your files',desc:'you can read your own resources.\nmaybe others too.',diff:'hard',pts:175},
+  9:{ title:'access level',desc:'your role is stored somewhere you can reach.\nit is encoded, not encrypted.',diff:'hard',pts:200},
+  10:{ title:'the gate',desc:'a hidden endpoint. a specific proof.\nfind the script. read it. compute the answer.',diff:'expert',pts:250},
+};
+
+const HINTS = {
+  1:[{cost:10,text:'...'},{cost:15,text:'...'}],
+  2:[{cost:15,text:'...'},{cost:20,text:'...'}],
+  3:[{cost:20,text:'...'},{cost:25,text:'...'}],
+  4:[{cost:20,text:'...'},{cost:25,text:'...'}],
+  5:[{cost:25,text:'...'},{cost:30,text:'...'}],
+  6:[{cost:25,text:'...'},{cost:30,text:'...'}],
+  7:[{cost:30,text:'...'},{cost:35,text:'...'}],
+  8:[{cost:30,text:'...'},{cost:35,text:'...'}],
+  9:[{cost:35,text:'...'},{cost:40,text:'...'}],
+  10:[{cost:50,text:'...'},{cost:60,text:'...'}],
+};
+
+function _zoneBody(n){return ''}
+
+function _diffClass(d){return{easy:'d-easy',medium:'d-med',hard:'d-hard',expert:'d-xtra'}[d]||'d-easy'}
+
+function _render(){if(_st>10)return;const m=META[_st];document.getElementById('root').innerHTML=`
+<div id="glow"></div>
+<div class="app">
+<header class="hdr">
+<div class="hdr-tag">capture the flag</div>
+<div class="hdr-title">Hard,<span> no?</span></div>
+<div class="hdr-meta">
+<span>challenge <b>${_st}</b>/10</span>
+<span>built by <b>0x69erツ</b></span>
+</div>
+</header>
+${_livesHTML()}
+${_scoreBar()}
+<div class="card">
+<div class="card-head">
+<div>
+<div class="card-id">CHALLENGE ${String(_st).padStart(2,'0')}</div>
+<div class="card-title">${m.title}</div>
+</div>
+<div>
+<span class="diff-badge ${_diffClass(m.diff)}">${m.diff}</span>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--mu);text-align:right;margin-top:4px">${m.pts} pts</div>
+</div>
+</div>
+<div class="card-desc">${m.desc}</div>
+${_zoneBody(_st)}
+<div id="msg"></div>
+</div>
+</div>`;}
+
+function _gameOver(){}
+function _win(){}
+
+window._submit=_submit;
+window._c5getToken=_c5getToken;
+window._c5claim=_c5claim;
+window._c6submit=_c6submit;
+window._c7submit=_c7submit;
+window._c8try=_c8try;
+window._c9visit=_c9visit;
+window._c10submit=_c10submit;
+window._copy=_copy;
+window._getHint=_getHint;
+window._init=_init;
+
+_init();
+})();
