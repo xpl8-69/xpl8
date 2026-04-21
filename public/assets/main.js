@@ -202,16 +202,46 @@ const META = {
 };
 
 const HINTS = {
-  1: [{cost:10,text:'...'},{cost:15,text:'...'}],
-  2: [{cost:15,text:'...'},{cost:20,text:'...'}],
-  3: [{cost:20,text:'...'},{cost:25,text:'...'}],
-  4: [{cost:20,text:'...'},{cost:25,text:'...'}],
-  5: [{cost:25,text:'...'},{cost:30,text:'...'}],
-  6: [{cost:25,text:'...'},{cost:30,text:'...'}],
-  7: [{cost:30,text:'...'},{cost:35,text:'...'}],
-  8: [{cost:30,text:'...'},{cost:35,text:'...'}],
-  9: [{cost:35,text:'...'},{cost:40,text:'...'}],
-  10:[{cost:50,text:'...'},{cost:60,text:'...'}],
+  1: [
+    {cost:10, text:'the output of each operation feeds into the next.'},
+    {cost:15, text:'one of these operations is reversible by reading backwards.'}
+  ],
+  2: [
+    {cost:15, text:'raw binary is not always what it seems. something was applied to each byte.'},
+    {cost:20, text:'XOR is self-inverse. if you know the key, you can undo it.'}
+  ],
+  3: [
+    {cost:20, text:'two layers. the outer one is just encoding, not encryption.'},
+    {cost:25, text:'ROT13 applied after decoding the outer layer.'}
+  ],
+  4: [
+    {cost:20, text:'not everything visible on screen is the whole story.'},
+    {cost:25, text:'the page source holds more than meets the eye. dots and dashes.'}
+  ],
+  5: [
+    {cost:25, text:'the token structure is standard. the weakness is not.'},
+    {cost:30, text:'some implementations trust the algorithm field in the header itself.'}
+  ],
+  6: [
+    {cost:25, text:'the endpoint accepts more fields than it admits.'},
+    {cost:30, text:'developers leave traces. look for something that should not be in production.'}
+  ],
+  7: [
+    {cost:30, text:'the query is concatenated, not parameterized.'},
+    {cost:35, text:'classic injection terminates the condition early.'}
+  ],
+  8: [
+    {cost:30, text:'the server trusts what the client sends a bit too much.'},
+    {cost:35, text:'what happens if you request a resource that belongs to someone else?'}
+  ],
+  9: [
+    {cost:35, text:'authorization state is stored somewhere the client can touch.'},
+    {cost:40, text:'a base64-encoded value in a cookie is not the same as encryption.'}
+  ],
+  10:[
+    {cost:50, text:'the endpoint is not documented. you have to find it.'},
+    {cost:60, text:'the script reveals the path. the path expects a specific value.'}
+  ],
 };
 
 function _zoneBody(n) {
