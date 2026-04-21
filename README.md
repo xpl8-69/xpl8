@@ -8,7 +8,7 @@ no handholding. figure it out.
 ## stack
 
 - Node.js + Express
-- clues are server-generated PNGs — nothing useful in the client
+- clues are server-generated PNGs 
 - flag only leaves the server when you earn it
 
 ---
@@ -37,16 +37,5 @@ open `http://localhost:3000`
 ```
 
 
-```
-index.html   →  empty shell
-main.js      →  just api calls
-main.css     →  just styles
-server.js    →  not served to the client
-```
-
-everything that matters lives on the server.
-inspecting the client gets you nothing.
-
----
 
 *built by 0x69erツ*
