@@ -1,5 +1,2 @@
 [phases.setup]
-nixPkgs = ["cairo", "pango", "libpng", "libjpeg", "giflib", "pixman", "pkg-config", "python3"]
-
-[phases.install]
-cmds = ["npm install --build-from-source"]
+nixPkgs = []
