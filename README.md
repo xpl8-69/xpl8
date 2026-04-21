@@ -1,27 +1,52 @@
-# CTF Challenge — built by 0x69erツ
+# 0x69er-ctf
 
-## Setup
+a web-based CTF with 7 zones. starts easy, gets nasty.
+no handholding. figure it out.
+
+---
+
+## stack
+
+- Node.js + Express
+- clues are server-generated PNGs — nothing useful in the client
+- flag only leaves the server when you earn it
+
+---
+
+## run it
+
 ```bash
 npm install
 node server.js
-# http://localhost:3000
 ```
 
-## Security model
-| What | Where | Visible in source? |
-|------|-------|---------------------|
-| FLAG | server.js only | ❌ No |
-| Answers | server.js only | ❌ No |
-| JWT secret | server.js only | ❌ No |
-| 2FA code | server.js only | ❌ No |
-| Clues | Generated as PNG server-side | ❌ No |
-| HTML/JS/CSS | Empty shell + API calls only | ✅ Yes — useless |
+open `http://localhost:3000`
 
-## Zones
-- Zone 01 — Hex → ASCII (EASY)
-- Zone 02 — Binary → ASCII (MEDIUM)
-- Zone 03 — Caesar -7 + Reverse (MEDIUM)
-- Zone 04 — Deobfuscate JavaScript (MEDIUM)
-- Zone 05 — JWT Auth (HARD)
-- Zone 06 — 2FA Bypass (HARD)
-- Zone 07 — Authentication Bypass (HARD)
+---
+
+## zones
+
+```
+01  hex → ascii          [ easy   ]
+02  binary → ascii       [ medium ]
+03  caesar cipher        [ medium ]
+04  js deobfuscation     [ medium ]
+05  jwt manipulation     [ hard   ]
+06  2fa bypass           [ hard   ]
+07  auth bypass          [ hard   ]
+```
+
+
+```
+index.html   →  empty shell
+main.js      →  just api calls
+main.css     →  just styles
+server.js    →  not served to the client
+```
+
+everything that matters lives on the server.
+inspecting the client gets you nothing.
+
+---
+
+*built by 0x69erツ*
