@@ -223,8 +223,6 @@ function _zoneBody(n) {
 <span class="hl">part_b</span> = <span class="hl2">"4F48"</span>
 <span class="hl">part_c</span> = <span class="hl2">"47"</span>
 
-<span class="dim">// each part is hex. but the word was reversed before splitting.</span>
-<span class="dim">// combine → undo reversal → decode → UPPERCASE</span>`)}
     <div class="irow"><label class="ilbl">answer</label><input class="inp" id="ans" type="text" maxlength="12" placeholder="_ _ _ _ _" autocomplete="off" spellcheck="false"/></div>
     ${_hintsHTML(1, HINTS[1])}
     <div class="btn-row"><button class="btn btn-g" id="sub-btn" onclick="_submit(1)">submit</button></div>`;
