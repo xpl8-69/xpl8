@@ -1,0 +1,228 @@
+═══════════════════════════════════════════════════════
+  0x69er CTF — CREATOR GUIDE  (private, not served)
+  built by 0x69erツ
+═══════════════════════════════════════════════════════
+
+MOD PANEL ACCESS
+─────────────────
+Type the master code in any input field on the site:
+  Ma7m0ud_iS_n0t_g00d
+
+This opens the mod panel overlay (top-right corner).
+
+
+CHALLENGES — SOLUTIONS & APPROACH
+────────────────────────────────────
+
+CHALLENGE 01 — "three parts, one word"  [50 pts / Easy]
+  Category : Encoding / Crypto
+  Answer   : GHOST
+  Method   :
+    The page source has four hex fragments as HTML comments:
+      p1="5453"  p2="4F"  p3="48"  p4="47"
+    Join them: 5453 4F 48 47
+    Read each two hex digits as ASCII:
+      54=T  53=S  4F=O  48=H  47=G
+    Reverse the string: G H O S T  →  GHOST
+  Hints    :
+    Hint 1 (-10 pts): each operation's output feeds the next.
+    Hint 2 (-15 pts): one operation is reversible by reading backwards.
+
+
+CHALLENGE 02 — "noisy bits"  [75 pts / Easy]
+  Category : XOR Cipher
+  Answer   : CIPHER
+  Method   :
+    The clue gives an array of hex bytes and a key (_0x0A_ = 10):
+      0x49 0x43 0x5A 0x42 0x4F 0x58
+    XOR each with 10 (0x0A):
+      0x49^0x0A = 0x43 = C
+      0x43^0x0A = 0x49 = I
+      0x5A^0x0A = 0x50 = P
+      0x42^0x0A = 0x48 = H
+      0x4F^0x0A = 0x45 = E
+      0x58^0x0A = 0x52 = R
+    Result: CIPHER
+  Hints    :
+    Hint 1 (-15 pts): something was applied to each byte.
+    Hint 2 (-20 pts): XOR is self-inverse — knowing the key lets you undo it.
+
+
+CHALLENGE 03 — "dead script"  [100 pts / Medium]
+  Category : Base64 + ROT13
+  Answer   : SHADOW
+  Method   :
+    GET /api/c3clue — returns obfuscated JS, paste in browser console.
+    The script:
+      1. Decodes the string "UlVOUUJK" from Base64 → "RUNQBJ" (example)
+         (actual encoded value decodes via atob)
+      2. Applies ROT13 to the result
+    Final decoded word: SHADOW
+  Hints    :
+    Hint 1 (-20 pts): two layers — the outer one is just encoding.
+    Hint 2 (-25 pts): ROT13 is applied after decoding the outer layer.
+
+
+CHALLENGE 04 — "maintenance page"  [125 pts / Medium]
+  Category : Steganography / Morse Code
+  Answer   : DELTA
+  Method   :
+    GET /api/c4page — returns an HTML maintenance page.
+    Hidden in the HTML source as a comment:
+      <!-- -.. . .-.. - .- -->
+    Decode Morse:
+      -..  = D
+      .    = E
+      .-.. = L
+      -    = T
+      .-   = A
+    Result: DELTA
+  Hints    :
+    Hint 1 (-20 pts): browsers render but also hide things.
+    Hint 2 (-25 pts): the page source holds more than meets the eye — dots and dashes.
+
+
+CHALLENGE 05 — "access denied"  [150 pts / Medium]
+  Category : JWT Algorithm Confusion (alg:none)
+  Answer   : (no text answer — solved by token manipulation)
+  Method   :
+    1. POST /api/c5/token → receive a JWT cookie (role: "viewer").
+    2. Decode the JWT (base64url split by dots).
+    3. Change the header's "alg" to "none" and the payload's "role" to "admin".
+    4. Re-encode without a signature (just header.payload.)
+    5. Set the ctf_auth cookie to this forged token.
+    6. POST /api/c5/verify → server accepts alg:none, sees role=admin → correct.
+  Hints    :
+    Hint 1 (-25 pts): the token structure is standard; the weakness is not.
+    Hint 2 (-30 pts): some implementations trust the "alg" field in the JWT header.
+
+
+CHALLENGE 06 — "second factor"  [150 pts / Hard]
+  Category : Hidden debug parameter
+  Answer   : (no text answer — solved via Burp Suite / DevTools)
+  Method   :
+    POST /api/c6/verify
+    The endpoint normally expects { "code": "291847" } (hardcoded).
+    BUT: including any "debug" field in the JSON body bypasses the code check:
+      POST body: { "code": "anything", "debug": 1 }
+    This simulates a developer backdoor left in production.
+  Hints    :
+    Hint 1 (-25 pts): the endpoint accepts more fields than it admits.
+    Hint 2 (-30 pts): developers leave traces — look for something not meant for production.
+
+
+CHALLENGE 07 — "login"  [175 pts / Hard]
+  Category : SQL Injection (simulated)
+  Answer   : (no text answer — solved via SQLi payload)
+  Method   :
+    POST /api/c7/login with username/password.
+    The server checks for classic SQLi patterns in the input.
+    Send a payload like:
+      username: admin'--
+      password: anything
+    The server detects a valid SQLi pattern → marks as solved.
+  Hints    :
+    Hint 1 (-30 pts): the query is concatenated, not parameterized.
+    Hint 2 (-35 pts): classic injection terminates the condition early.
+
+
+CHALLENGE 08 — "your files"  [175 pts / Hard]
+  Category : IDOR (Insecure Direct Object Reference)
+  Answer   : (no text answer — solved by accessing wrong resource ID)
+  Method   :
+    GET /api/c8/resource/:id  (id = 1, 2, 3)
+    Resource 1 and 3 belong to "guest". Resource 2 belongs to "admin".
+    Simply accessing /api/c8/resource/2 returns the admin secret → solved.
+  Hints    :
+    Hint 1 (-30 pts): the server trusts what the client sends a bit too much.
+    Hint 2 (-35 pts): what happens if you request a resource that belongs to someone else?
+
+
+CHALLENGE 09 — "access level"  [200 pts / Hard]
+  Category : Cookie Manipulation
+  Answer   : (no text answer — solved by cookie edit)
+  Method   :
+    1. GET /api/c9/profile — server sets c9_role cookie = base64("guest")
+    2. Decode: base64("guest") = "Z3Vlc3Q="
+    3. Encode "superadmin" in base64: "c3VwZXJhZG1pbg=="
+    4. Set cookie c9_role = "c3VwZXJhZG1pbg=="
+    5. GET /api/c9/profile again → server decodes, sees "superadmin" → solved.
+  Hints    :
+    Hint 1 (-35 pts): authorization state is stored somewhere the client can touch.
+    Hint 2 (-40 pts): a base64-encoded value in a cookie is not encryption.
+
+
+CHALLENGE 10 — "the gate"  [250 pts / Expert]
+  Category : Hash computation from hidden script
+  Answer   : SHA-256 hash (hex string)
+  Method   :
+    1. GET /api/c10clue — returns obfuscated JS with the formula:
+         proof = SHA256("0x69er" + sessionToken.slice(0, 8))
+    2. Your session token is in the x-session header (or localStorage).
+    3. Compute the hash in browser console:
+         const t = "<your_token_here>";
+         const s = "0x69er" + t.slice(0, 8);
+         const b = new TextEncoder().encode(s);
+         const h = await crypto.subtle.digest("SHA-256", b);
+         console.log(Array.from(new Uint8Array(h)).map(x=>x.toString(16).padStart(2,'0')).join(''));
+    4. POST /api/c10/gate  { "proof": "<computed_hash>" } → solved.
+  Hints    :
+    Hint 1 (-50 pts): the endpoint is not documented — you have to find it.
+    Hint 2 (-60 pts): the script reveals the path and expects a specific value.
+
+
+CHALLENGE 11 — "forensics ain't fun"  [200 pts / Hard]
+  Category : Digital Forensics (PPTM macro / metadata)
+  File     : forensics-aint-fun.pptm
+  Answer   : FLAG{f0r3n51c5_3y35_n3v3r_m155_4_clu3}
+  Method   :
+    Examine the PPTM file (Office Open XML format = ZIP).
+    The flag is hidden in: macros, slide notes, metadata, or embedded objects.
+    Tools: strings, binwalk, olevba, unzip + grep, or just open in LibreOffice.
+  Guide    : (challenge doesn't show guide text by design)
+
+
+CHALLENGE 12 — "reverse engineering"  [150 pts / Hard]
+  Category : Reverse Engineering (Windows PE)
+  File     : Untitled1.exe  (made by 7meeda)
+  Answer   : FLAG{r3v3r53_1t_t1ll_1t_cr4ck5_b4ck}
+  Method   :
+    Use: strings, Ghidra, IDA Free, x64dbg, or die/exeinfope.
+    The flag is hardcoded in the binary — search for "FLAG{" with strings
+    or find it via static analysis in the main/comparison function.
+  Guide    : (challenge doesn't show guide text by design)
+
+
+═══════════════════════════════════════════════════════
+FINAL FLAG (awarded on completion of all 12 challenges)
+═══════════════════════════════════════════════════════
+  FLAG{5k1ll_1ssu3_but_y0u_m4d3_1t}
+
+
+MAX SCORE BREAKDOWN
+────────────────────
+  Challenge 01 :  50 pts
+  Challenge 02 :  75 pts
+  Challenge 03 : 100 pts
+  Challenge 04 : 125 pts
+  Challenge 05 : 150 pts
+  Challenge 06 : 150 pts
+  Challenge 07 : 175 pts
+  Challenge 08 : 175 pts
+  Challenge 09 : 200 pts
+  Challenge 10 : 250 pts
+  Challenge 11 : 200 pts
+  Challenge 12 : 150 pts
+  ─────────────────────
+  TOTAL        : 1850 pts
+
+
+NOTES FOR CREATOR
+──────────────────
+• This file is in the project root and is NOT served by the Express server.
+  Express only serves the /public directory and specific asset routes.
+  Players cannot access this file through the web.
+• The mod panel password is: Ma7m0ud_iS_n0t_g00d
+• To reset a player: use the mod panel to jump them to challenge 1.
+• The ban cookie is "ctf_ban" — clearing it client-side unban instantly.
+• Session tokens expire after 6 hours (server restart also clears all sessions).
