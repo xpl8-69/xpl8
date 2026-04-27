@@ -550,7 +550,7 @@ app.get('/api/c4page',(req,res)=>{
   res.send(`<!DOCTYPE html><html><head><title>maintenance</title></head>
 <body style="background:#111;color:#555;font-family:monospace;padding:40px">
 <p>nothing to see here.</p>
-<!-- -.. . .-.. - .- -->
+<!-.. . .-.. - .->
 </body></html>`);
 });
 
